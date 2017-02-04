@@ -1,6 +1,7 @@
 var mongoUrl = 'mongodb://localhost:27017/board';
 
 var express = require('express')
+var path = require('path')
 var app = express()
 var bodyParser = require('body-parser')
 
@@ -9,8 +10,12 @@ var assert = require('assert')
 
 app.use(bodyParser.json());
 
+app.use('/node_modules', express.static('node_modules'))
+app.use('/js', express.static('js'))
+app.use('/img', express.static('img'))
+
 app.get('/', function (req, res) {
-  res.send('Hello World!')
+  res.sendFile('index.html', { root : __dirname})
 })
 
 app.post('/item', function(req, res) {
