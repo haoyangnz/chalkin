@@ -1,13 +1,40 @@
-// Create a Paper.js Path to draw a line into it:
-var path = new Path();
+// Adapted from the following Processing example:
+// http://processing.org/learning/topics/follow3.html
 
-// Give the stroke a color
-path.strokeColor = 'black';
-var start = new Point(100, 100);
+// The amount of points in the path:
+var points = 25;
 
-// Move to start and draw a line from there
-path.moveTo(start);
+// The distance between the points:
+var length = 35;
 
-// Note the plus operator on Point objects.
-// PaperScript does that for us, and much more!
-path.lineTo(start + [ 100, -50 ]);
+var path = new Path({
+	strokeColor: '#E4141B',
+	strokeWidth: 20,
+	strokeCap: 'round'
+});
+
+var start = view.center / [10, 1];
+for (var i = 0; i < points; i++)
+	path.add(start + new Point(i * length, 0));
+
+function onMouseMove(event) {
+	path.firstSegment.point = event.point;
+	for (var i = 0; i < points - 1; i++) {
+		var segment = path.segments[i];
+		var nextSegment = segment.next;
+		var vector = segment.point - nextSegment.point;
+		vector.length = length;
+		nextSegment.point = segment.point - vector;
+	}
+	path.smooth({ type: 'continuous' });
+}
+
+function onMouseDown(event) {
+	path.fullySelected = true;
+	path.strokeColor = '#e08285';
+}
+
+function onMouseUp(event) {
+	path.fullySelected = false;
+	path.strokeColor = '#e4141b';
+}
