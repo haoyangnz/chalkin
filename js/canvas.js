@@ -6,6 +6,16 @@ textGuide.strokeWidth = 3
 var start
 var end
 
+
+get('item?x=0&y=0&width=' + view.size.width + '&height=' + view.size.height, function(res) {
+	json = JSON.parse(res)
+	console.log(json)
+	console.log(JSON.parse(json[0].item))
+	json.forEach(function(onejson) {
+		project.activeLayer.importJSON(JSON.parse(onejson.item))
+	})
+})
+
 function onMouseDown(event) {
 	start = event.point
 }
@@ -35,4 +45,14 @@ function onMouseUp(event) {
 		// done
   }
 
+}
+
+function get(url, callback)
+{
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() { 
+		if (xmlHttp.readyState == 4 && xmlHttp.status == 200) callback(xmlHttp.response);
+	}
+	xmlHttp.open("GET", url, true); // true for asynchronous 
+	xmlHttp.send(null);
 }
