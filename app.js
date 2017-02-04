@@ -18,6 +18,41 @@ app.get('/', function (req, res) {
   res.sendFile('index.html', { root : __dirname})
 })
 
+app.get('/item', function (req, res) {
+  query(res, {
+    x: Number(req.query.x),
+    y: Number(req.query.y),
+    width: Number(req.query.width),
+    height: Number(req.query.height)
+  })
+})
+
+function query(res, bounds) {
+  mongoConnect(function (db) {
+    var coll = db.collection('coordinates')
+    coll.find(
+      {
+        pos: { $geoWithin: { $box: [
+          [ bounds.x, bounds.y ],
+          [ bounds.x + bounds.width, bounds.y + bounds.width ]
+        ] } }
+      }, { obj: 1, _id: 0 }
+    ).map(function (o) { return o.obj })
+    .toArray(function (err, itemIds) {
+      queryDetails(res, db, itemIds)
+    })
+  })
+}
+
+function queryDetails(res, db, itemIds) {
+  var coll = db.collection('items')
+  coll.find({ _id: { $in: itemIds } }, { _id: 0 })
+    .toArray(function (err, data) {
+      db.close()
+      res.send(data)
+    })
+}
+
 app.post('/item', function(req, res) {
   // { x: 439.23049, y: 286.64455, width: 68.71089, height: 68.71089 }
   var body = req.body
@@ -54,13 +89,7 @@ function storeCoordinates(db, objId, item) {
   coll.insertMany([
     { pos: item.posMin, obj: objId },
     { pos: item.posMax, obj: objId, isMax: true }
-  ], deferCloseDB(db))
-}
-
-function deferCloseDB(db) {
-  return function() {
-    db.close()
-  }
+  ], function(db) { db.close(); })
 }
 
 function mongoConnect(callback) {
