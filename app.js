@@ -89,7 +89,7 @@ function storeCoordinates(db, objId, item) {
   coll.insertMany([
     { pos: item.posMin, obj: objId },
     { pos: item.posMax, obj: objId, isMax: true }
-  ], function(db) { db.close(); })
+  ], function() { db.close(); })
 }
 
 function mongoConnect(callback) {
