@@ -61,6 +61,16 @@ function onMouseUp(event) {
 }
 
 function onKeyDown(event) {
+	if (event.key == 'up') {
+		y -= view.size.height / 4;
+		project.activeLayer.position = [x,y]
+		load()
+	}
+	if (event.key == 'down') {
+		y += view.size.height / 4;
+		project.activeLayer.position = [x,y]
+		load()
+	}
 	if (event.key == 'left') {
 		x -= view.size.width / 4;
 		project.activeLayer.position = [x,y]
