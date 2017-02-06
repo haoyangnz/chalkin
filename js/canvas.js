@@ -9,24 +9,33 @@ var textGuide
 var x = 0
 var y = 0
 
-mode = 'text'
+//mode = 'text'
 load()
 
 function onMouseDown(event) {
-	if (mode == 'text') {
-		start = event.point
-	}
+	start = event.point
 }
 
 function onMouseDrag(event) {
-	if (mode == 'text') {
+	if (mode == 'move') {
+		var dx = start.x - event.point.x
+		var dy = start.y - event.point.y
+		x += dx
+		y += dy
+		project.activeLayer.position -= [dx, dy]
+		start = event.point
+	}
+	else if (mode == 'text') {
 		textGuide.removeSegments()
 		textGuide.add(start, event.point)
 	}
 }
 
 function onMouseUp(event) {
-	if (mode == 'text') {
+	if (mode == 'move') {
+		load()
+	}
+	else if (mode == 'text') {
 		end = event.point
 		textGuide.removeSegments()
 		var input = prompt('Input text', '')
@@ -55,32 +64,28 @@ function onMouseUp(event) {
 function onKeyDown(event) {
 	if (event.key == 'up') {
 		y -= view.size.height / 4;
-		project.activeLayer.position = [x,y]
 		load()
 	}
 	if (event.key == 'down') {
 		y += view.size.height / 4;
-		project.activeLayer.position = [x,y]
 		load()
 	}
 	if (event.key == 'left') {
 		x -= view.size.width / 4;
-		project.activeLayer.position = [x,y]
 		load()
 	}
 	if (event.key == 'right') {
 		x += view.size.width / 4;
-		project.activeLayer.position = [x,y]
 		load()
 	}
 }
 
 function load() {
-	project.activeLayer.removeChildren()
+	//project.activeLayer.removeChildren() XXX Commented out to prevent harsh refresh but is this need to prevent memory leak?
 	textGuide = new Path()
 	textGuide.strokeColor = chalk
 	textGuide.strokeWidth = 3
-	get('item?x=' + x + '&y=' + y + '&width=' + view.size.width + '&height=' + view.size.height, function(res) {
+	get('item?x=' + (x - view.size.width) + '&y=' + (y - view.size.height) + '&width=' + (view.size.width * 3) + '&height=' + (view.size.height * 3), function(res) {
 		json = JSON.parse(res)
 		json.forEach(function(onejson) {
 			var item = JSON.parse(onejson.item)
