@@ -53,7 +53,6 @@ function onMouseUp(event) {
 		var item = JSON.parse(text.exportJSON())
 		item[1].matrix[4] += x
 		item[1].matrix[5] += y
-		project.activeLayer.importJSON(item)
 		xhr.send(JSON.stringify({ bounds: {x: text.bounds.x + x, y: text.bounds.y + y, width: text.bounds.width, height: text.bounds.height}, item: JSON.stringify(item)  }))
 		xhr.onloadend = function () {
 			// done
@@ -62,21 +61,11 @@ function onMouseUp(event) {
 }
 
 function onKeyDown(event) {
-	if (event.key == 'up') {
-		y -= view.size.height / 4;
-		load()
+	if (event.key == 't') {
+		mode = 'text'
 	}
-	if (event.key == 'down') {
-		y += view.size.height / 4;
-		load()
-	}
-	if (event.key == 'left') {
-		x -= view.size.width / 4;
-		load()
-	}
-	if (event.key == 'right') {
-		x += view.size.width / 4;
-		load()
+	else if (event.key == 'm') {
+		mode = 'move'
 	}
 }
 
