@@ -13,7 +13,12 @@ var y = 0
 load()
 
 function onMouseDown(event) {
-	start = event.point
+	if (mode == 'move' || mode == 'text') {
+		start = event.point
+	}
+	else if (mode == 'erase') {
+		// TODO
+	}
 }
 
 function onMouseDrag(event) {
@@ -39,23 +44,25 @@ function onMouseUp(event) {
 		end = event.point
 		textGuide.removeSegments()
 		var input = prompt('Input text', '')
-		var text = new PointText(start)
-		text.content = input
-		text.fillColor = chalk
-		text.fontSize = 30
-		text.fontFamily = 'Comic Sans MS'
-		text.rotate(Math.atan((end.y - start.y) / (end. x - start.x)) * 180 / (Math.PI), start)
-		
-		// Store object
-		var xhr = new XMLHttpRequest()
-		xhr.open('POST', 'item', true)
-		xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8')
-		var item = JSON.parse(text.exportJSON())
-		item[1].matrix[4] += x
-		item[1].matrix[5] += y
-		xhr.send(JSON.stringify({ bounds: {x: text.bounds.x + x, y: text.bounds.y + y, width: text.bounds.width, height: text.bounds.height}, item: JSON.stringify(item)  }))
-		xhr.onloadend = function () {
-			// done
+		if (input && input != '') {
+			var text = new PointText(start)
+			text.content = input
+			text.fillColor = chalk
+			text.fontSize = 30
+			text.fontFamily = 'Comic Sans MS'
+			text.rotate(Math.atan((end.y - start.y) / (end. x - start.x)) * 180 / (Math.PI), start)
+			
+			// Store object
+			var xhr = new XMLHttpRequest()
+			xhr.open('POST', 'item', true)
+			xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8')
+			var item = JSON.parse(text.exportJSON())
+			item[1].matrix[4] += x
+			item[1].matrix[5] += y
+			xhr.send(JSON.stringify({ bounds: {x: text.bounds.x + x, y: text.bounds.y + y, width: text.bounds.width, height: text.bounds.height}, item: JSON.stringify(item)  }))
+			xhr.onloadend = function () {
+				// done
+			}
 		}
 	}
 }
@@ -66,6 +73,9 @@ function onKeyDown(event) {
 	}
 	else if (event.key == 'm') {
 		mode = 'move'
+	}
+	else if (event.key == 'e') {
+		mode = 'erase'
 	}
 }
 
