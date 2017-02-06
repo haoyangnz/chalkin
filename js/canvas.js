@@ -1,10 +1,8 @@
 var chalk = '#BCBDB8'
-var textGuide = new Path()
-textGuide.strokeColor = chalk
-textGuide.strokeWidth = 3
 
 var start
 var end
+var textGuide
 
 var x = 0
 var y = 0
@@ -13,9 +11,11 @@ load()
 
 function load() {
 	project.activeLayer.removeChildren()
+	textGuide = new Path()
+	textGuide.strokeColor = chalk
+	textGuide.strokeWidth = 3
 	get('item?x=' + x + '&y=' + y + '&width=' + view.size.width + '&height=' + view.size.height, function(res) {
 		json = JSON.parse(res)
-		console.log(json)
 		json.forEach(function(onejson) {
 			var item = JSON.parse(onejson.item)
 			item[1].matrix[4] -= x
