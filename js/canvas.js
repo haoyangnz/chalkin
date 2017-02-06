@@ -53,7 +53,7 @@ function onMouseUp(event) {
 	item[1].matrix[4] += x
 	item[1].matrix[5] += y
 	project.activeLayer.importJSON(item)
-  xhr.send(JSON.stringify({ bounds: {x: text.bounds.x, y: text.bounds.y, width: text.bounds.width, height: text.bounds.height}, item: JSON.stringify(item)  }))
+  xhr.send(JSON.stringify({ bounds: {x: text.bounds.x + x, y: text.bounds.y + y, width: text.bounds.width, height: text.bounds.height}, item: JSON.stringify(item)  }))
   xhr.onloadend = function () {
 		// done
   }
